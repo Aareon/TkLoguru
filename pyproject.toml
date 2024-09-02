@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tkloguru"
-version = "0.1.0"
+version = "0.1.1"
 description = "A custom Tkinter widget that displays Loguru log messages in real-time with support for styling and colors. Monitor application logs directly within your Tkinter GUI."
 authors = ["Aareon Sullivan <askully13@gmail.com>"]
 license = "MIT"
