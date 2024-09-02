@@ -2,7 +2,7 @@
 
 A thread-safe, customizable Tkinter widget for displaying Loguru logs in real-time.
 
-![Loguru Tkinter Widget Demo](https://via.placeholder.com/600x400.png?text=Loguru+Tkinter+Widget+Demo)
+![Loguru Tkinter Widget Demo](./image.png)
 
 ## Features
 
