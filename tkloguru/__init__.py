@@ -6,16 +6,41 @@ import sys
 import threading
 
 class LoguruWidget(ttk.Frame):
+    """
+    A custom Tkinter widget for displaying Loguru log messages.
+
+    This widget creates a text area with optional scrollbar to display
+    log messages from Loguru. It supports different color modes and
+    can limit the number of displayed lines.
+
+    Attributes:
+        queue (Queue): A thread-safe queue for storing log records.
+        show_scrollbar (bool): Whether to show a scrollbar or not.
+        color_mode (str): The coloring mode for log messages.
+        max_lines (int): Maximum number of lines to display in the widget.
+    """
+
     def __init__(self, master=None, show_scrollbar=True, color_mode='level', max_lines=1000, **kwargs):
+        """
+        Initialize the LoguruWidget.
+
+        Args:
+            master: The parent widget.
+            show_scrollbar (bool): Whether to show a scrollbar.
+            color_mode (str): The coloring mode ('level', 'message', or 'full').
+            max_lines (int): Maximum number of lines to display.
+            **kwargs: Additional keyword arguments for the ttk.Frame.
+        """
         super().__init__(master, **kwargs)
         self.queue = queue.Queue()
         self.show_scrollbar = show_scrollbar
-        self.color_mode = color_mode  # 'level', 'message', or 'full'
+        self.color_mode = color_mode
         self.max_lines = max_lines
         self.create_widgets()
         self.after(100, self.check_queue)
 
     def create_widgets(self):
+        """Create and configure the Text widget and optional Scrollbar."""
         self.text = tk.Text(self, wrap=tk.WORD, state=tk.DISABLED)
         
         if self.show_scrollbar:
@@ -34,6 +59,12 @@ class LoguruWidget(ttk.Frame):
         self.text.tag_configure("CRITICAL", foreground="white", background="#c0392b")  # White on dark red
 
     def check_queue(self):
+        """
+        Check the queue for new log records and update the widget.
+
+        This method is called periodically to process new log records
+        from the queue and update the text widget.
+        """
         try:
             while self.queue.qsize():
                 record = self.queue.get_nowait()
@@ -44,6 +75,12 @@ class LoguruWidget(ttk.Frame):
             self.after(100, self.check_queue)
 
     def update_widget(self, record):
+        """
+        Update the text widget with a new log record.
+
+        Args:
+            record (dict): A dictionary containing log record information.
+        """
         self.text.configure(state=tk.NORMAL)
         
         time_str = record["time"].strftime("%Y-%m-%d %H:%M:%S")
@@ -68,10 +105,28 @@ class LoguruWidget(ttk.Frame):
         self.text.configure(state=tk.DISABLED)
 
     def sink(self, message):
+        """
+        Add a log message to the queue.
+
+        This method is used as a sink for Loguru to add log records
+        to the queue for later processing.
+
+        Args:
+            message: A Loguru message object.
+        """
         record = message.record
         self.queue.put(record)
 
 def setup_logger(widget):
+    """
+    Set up the Loguru logger to use the LoguruWidget.
+
+    This function removes all existing Loguru handlers and adds
+    the LoguruWidget as a new handler.
+
+    Args:
+        widget (LoguruWidget): The LoguruWidget instance to use as a handler.
+    """
     logger.remove()
     logger.add(widget.sink, backtrace=True, diagnose=True)
 
@@ -90,8 +145,8 @@ if __name__ == "__main__":
     # Add console handler for debugging
     logger.add(sys.stdout, level="DEBUG")
 
-    # Example log messages
     def generate_logs():
+        """Generate example log messages of various levels."""
         logger.debug("This is a debug message")
         logger.info("This is an info message")
         logger.success("This is a success message")
