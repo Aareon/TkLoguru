@@ -1,16 +1,33 @@
 [tool.poetry]
 name = "tkloguru"
-version = "0.1.0"
+version = "0.1.2"
 description = "A custom Tkinter widget that displays Loguru log messages in real-time with support for styling and colors. Monitor application logs directly within your Tkinter GUI."
 authors = ["Aareon Sullivan <askully13@gmail.com>"]
 license = "MIT"
 readme = "README.md"
 packages = [{ include = "tkloguru" }]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12"
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
 loguru = "^0.7.2"
 
+
+[tool.poetry.group.dev.dependencies]
+ttkbootstrap = "^1.10.1"
 
 [build-system]
 requires = ["poetry-core"]
@@ -19,17 +36,3 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.urls]
 "Homepage" = "https://github.com/Aareon/TkLoguru"
 "Bug Tracker" = "https://github.com/Aareon/TkLoguru/issues"
-
-[tool.poetry.classifiers]
-"Development Status" = "3 - Alpha"
-"Intended Audience" = "Developers"
-"License" = "MIT"
-"Operating System" = "OS Independent"
-"Programming Language :: Python" = "3"
-"Programming Language :: Python :: 3.6"
-"Programming Language :: Python :: 3.7"
-"Programming Language :: Python :: 3.8"
-"Programming Language :: Python :: 3.9"
-"Programming Language :: Python :: 3.10"
-"Programming Language :: Python :: 3.11"
-"Programming Language :: Python :: 3.12"
