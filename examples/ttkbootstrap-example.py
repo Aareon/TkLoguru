@@ -49,6 +49,15 @@ class TkLoguruDemo(ttk.Window):
         )
         self.continuous_log_btn.pack(fill=X, pady=5)
 
+        # Add a button to change log level
+        self.change_level_btn = ttk.Button(
+            button_frame,
+            text="Change Log Level",
+            command=self.change_log_level,
+            style="secondary.Outline.TButton"
+        )
+        self.change_level_btn.pack(fill=X, pady=5)
+
     def log_message(self, level):
         log_func = getattr(logger, level)
         log_func(f"This is a {level} message")
@@ -69,6 +78,23 @@ class TkLoguruDemo(ttk.Window):
             self.log_message(level)
             count += 1
             time.sleep(0.5)
+
+    def change_log_level(self):
+        levels = ["TRACE", "DEBUG", "INFO", "SUCCESS", "WARNING", "ERROR", "CRITICAL"]
+        level_no_to_name = {5: "TRACE", 10: "DEBUG", 20: "INFO", 25: "SUCCESS", 30: "WARNING", 40: "ERROR", 50: "CRITICAL"}
+        
+        current_level_no = logger._core.min_level
+        current_level = level_no_to_name.get(current_level_no, "INFO")  # Default to INFO if level is not found
+        
+        current_index = levels.index(current_level)
+        new_index = (current_index + 1) % len(levels)
+        new_level = levels[new_index]
+        
+        self.log_widget.set_logging_level(new_level)
+        
+        # Use the appropriate logging function based on the new level
+        log_func = getattr(logger, new_level.lower())
+        log_func(f"Changed logging level from {current_level} to: {new_level}")
 
 if __name__ == "__main__":
     app = TkLoguruDemo()
