@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 import queue
-import sys
 import tkinter as tk
 from datetime import datetime
 from tkinter import ttk
@@ -270,7 +269,7 @@ class LoguruWidget(ttk.Frame):
 
     def process_all_events(self) -> None:
         """Process all pending Tkinter events immediately."""
-        while self.dooneevent(tk._tkinter.ALL_EVENTS | tk._tkinter.DONT_WAIT):
+        while self.tk.dooneevent(tk._tkinter.ALL_EVENTS | tk._tkinter.DONT_WAIT):
             pass
         self.update()
 
@@ -287,90 +286,18 @@ def setup_logger(widget: LoguruWidget) -> None:
         except ValueError:
             pass
 
-    widget._sink_id = logger.add(widget.sink, backtrace=True, diagnose=True)
+    widget._sink_id = logger.add(widget.sink, level="DEBUG", backtrace=True, diagnose=True)
     widget._current_level = "DEBUG"
 
     if widget.intercept_logging:
-        logging.getLogger().addHandler(LoggingInterceptHandler(widget))
-        logging.getLogger().setLevel(logging.DEBUG)
+        root_logger = logging.getLogger()
+        root_logger.handlers = [
+            h
+            for h in root_logger.handlers
+            if not (isinstance(h, LoggingInterceptHandler) and h.widget is widget)
+        ]
+        root_logger.addHandler(LoggingInterceptHandler(widget))
+        root_logger.setLevel(logging.DEBUG)
 
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    root.title("LoguruWidget Example")
-    root.geometry("800x600")
-
-    log_widget = LoguruWidget(
-        root,
-        show_scrollbar=True,
-        color_mode="level",
-        max_lines=1000,
-        intercept_logging=True,
-    )
-    log_widget.pack(expand=True, fill=tk.BOTH, padx=10, pady=10)
-
-    setup_logger(log_widget)
-
-    logger.add(sys.stdout, level="DEBUG")
-
-    def generate_sample_logs() -> None:
-        logger.debug("This is a debug message")
-        logger.info("This is an info message")
-        logger.success("This is a success message")
-        logger.warning("This is a warning message")
-        logger.error("This is an error message")
-        logger.critical("This is a critical message")
-
-        logging.debug("Standard logging: debug message")
-        logging.info("Standard logging: info message")
-        logging.warning("Standard logging: warning message")
-        logging.error("Standard logging: error message")
-        logging.critical("Standard logging: critical message")
-
-    button_frame = ttk.Frame(root)
-    button_frame.pack(fill=tk.X, padx=10, pady=5)
-
-    generate_logs_button = ttk.Button(
-        button_frame, text="Generate Sample Logs", command=generate_sample_logs
-    )
-    generate_logs_button.pack(side=tk.LEFT, padx=5)
-
-    def change_color_mode() -> None:
-        current_mode = log_widget.color_mode
-        new_mode = (
-            "full"
-            if current_mode == "level"
-            else "level"
-            if current_mode == "message"
-            else "message"
-        )
-        log_widget.color_mode = new_mode
-
-        current_level = log_widget.get_logging_level()
-        log_func = getattr(logger, current_level.lower())
-        log_func(f"Changed color mode to: {new_mode}")
-
-    color_mode_button = ttk.Button(
-        button_frame, text="Change Color Mode", command=change_color_mode
-    )
-    color_mode_button.pack(side=tk.LEFT, padx=5)
-
-    def change_log_level() -> None:
-        current_level = log_widget.get_logging_level()
-        current_index = LEVELS.index(current_level)
-        new_index = (current_index + 1) % len(LEVELS)
-        new_level = LEVELS[new_index]
-
-        log_widget.set_logging_level(new_level)
-        log_func = getattr(logger, new_level.lower())
-        log_func(f"Changed logging level from {current_level} to: {new_level}")
-
-    log_level_button = ttk.Button(
-        button_frame, text="Change Log Level", command=change_log_level
-    )
-    log_level_button.pack(side=tk.LEFT, padx=5)
-
-    root.mainloop()
-
-
-__all__ = ["LoguruWidget", "setup_logger", "LEVELS", "LEVEL_NO_TO_NAME"]
+__all__ = ["LoguruWidget", "LogRecord", "WidgetConfig", "setup_logger", "LEVELS"]
