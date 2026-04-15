@@ -113,6 +113,7 @@ class LoguruWidget(ttk.Frame):
 
         self._layout_manager: str | None = None
         self._is_destroyed = False
+        self._sink_id: int | None = None
 
         self.create_widgets()
         self.after(100, self.check_queue)
@@ -223,8 +224,13 @@ class LoguruWidget(ttk.Frame):
 
     def set_logging_level(self, level: str) -> None:
         """Set the Loguru sink level for this widget."""
-        logger.remove()
-        logger.add(self.sink, level=level)
+        if self._sink_id is not None:
+            try:
+                logger.remove(self._sink_id)
+            except ValueError:
+                pass
+
+        self._sink_id = logger.add(self.sink, level=level, backtrace=True, diagnose=True)
 
     def pack(self, **kwargs: Any) -> None:
         """Pack the widget and initialize child layout on first call."""
@@ -265,8 +271,13 @@ def setup_logger(widget: LoguruWidget) -> None:
 
     If intercept_logging is enabled on the widget, stdlib logging is also intercepted.
     """
-    logger.remove()
-    logger.add(widget.sink, backtrace=True, diagnose=True)
+    if widget._sink_id is not None:
+        try:
+            logger.remove(widget._sink_id)
+        except ValueError:
+            pass
+
+    widget._sink_id = logger.add(widget.sink, backtrace=True, diagnose=True)
 
     if widget.intercept_logging:
         logging.getLogger().addHandler(LoggingInterceptHandler(widget))
