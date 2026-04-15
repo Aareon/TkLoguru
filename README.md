@@ -15,14 +15,19 @@ A thread-safe, customizable Tkinter widget for displaying Loguru logs in real-ti
 
 ## Installation
 
-1. Ensure you have Python 3.6+ installed on your system.
-2. Install the required dependencies:
+### From PyPI
 
 ```bash
 pip install tkloguru
 ```
 
-3. Copy the `LoguruWidget` class and related functions into your project.
+### Development setup with uv
+
+```bash
+uv sync --dev
+```
+
+This installs the package and development tools from `pyproject.toml`, including `ruff`.
 
 ## Usage
 
@@ -31,7 +36,7 @@ Here's a basic example of how to use the Loguru Tkinter Widget:
 ```python
 import tkinter as tk
 from loguru import logger
-from loguru_widget import LoguruWidget, setup_logger
+from tkloguru import LoguruWidget, setup_logger
 
 root = tk.Tk()
 root.title("Loguru Tkinter Widget Demo")
@@ -52,6 +57,19 @@ logger.critical("This is a critical message")
 
 root.mainloop()
 ```
+
+## Development
+
+### Lint and format with ruff
+
+```bash
+uv run ruff check .
+uv run ruff format .
+```
+
+### Why pydantic is included
+
+`tkloguru` uses `pydantic` internally to validate widget configuration and normalize log record payloads before rendering.
 
 ## Customization
 

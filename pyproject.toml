@@ -1,38 +1,53 @@
-[tool.poetry]
+[project]
 name = "tkloguru"
 version = "0.1.2"
 description = "A custom Tkinter widget that displays Loguru log messages in real-time with support for styling and colors. Monitor application logs directly within your Tkinter GUI."
-authors = ["Aareon Sullivan <askully13@gmail.com>"]
-license = "MIT"
 readme = "README.md"
-packages = [{ include = "tkloguru" }]
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Aareon Sullivan", email = "askully13@gmail.com" }]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12"
 ]
+dependencies = [
+    "loguru>=0.7.2",
+    "pydantic>=2.7.0"
+]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-loguru = "^0.7.2"
+[project.urls]
+Homepage = "https://github.com/Aareon/TkLoguru"
+"Bug Tracker" = "https://github.com/Aareon/TkLoguru/issues"
 
-
-[tool.poetry.group.dev.dependencies]
-ttkbootstrap = "^1.10.1"
+[dependency-groups]
+dev = [
+    "ruff>=0.11.0",
+    "ttkbootstrap>=1.10.1"
+]
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling>=1.24.0"]
+build-backend = "hatchling.build"
 
-[tool.poetry.urls]
-"Homepage" = "https://github.com/Aareon/TkLoguru"
-"Bug Tracker" = "https://github.com/Aareon/TkLoguru/issues"
+[tool.hatch.build.targets.wheel]
+packages = ["tkloguru"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+"examples/*.py" = ["E402", "E501", "F403", "F405", "F841", "E741"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
