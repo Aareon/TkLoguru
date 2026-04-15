@@ -260,7 +260,7 @@ class LoguruWidget(ttk.Frame):
 
     def process_all_events(self) -> None:
         """Process all pending Tkinter events immediately."""
-        while self.master.dooneevent(tk._tkinter.ALL_EVENTS | tk._tkinter.DONT_WAIT):
+        while self.dooneevent(tk._tkinter.ALL_EVENTS | tk._tkinter.DONT_WAIT):
             pass
         self.update()
 
