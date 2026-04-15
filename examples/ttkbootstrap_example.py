@@ -87,20 +87,7 @@ class TkLoguruDemo(ttk.Window):
 
     def change_log_level(self):
         levels = ["TRACE", "DEBUG", "INFO", "SUCCESS", "WARNING", "ERROR", "CRITICAL"]
-        level_no_to_name = {
-            5: "TRACE",
-            10: "DEBUG",
-            20: "INFO",
-            25: "SUCCESS",
-            30: "WARNING",
-            40: "ERROR",
-            50: "CRITICAL",
-        }
-
-        current_level_no = logger._core.min_level
-        current_level = level_no_to_name.get(
-            current_level_no, "INFO"
-        )  # Default to INFO if level is not found
+        current_level = self.log_widget.get_logging_level()
 
         current_index = levels.index(current_level)
         new_index = (current_index + 1) % len(levels)

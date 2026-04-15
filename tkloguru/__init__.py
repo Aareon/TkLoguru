@@ -114,6 +114,7 @@ class LoguruWidget(ttk.Frame):
         self._layout_manager: str | None = None
         self._is_destroyed = False
         self._sink_id: int | None = None
+        self._current_level = "DEBUG"
 
         self.create_widgets()
         self.after(100, self.check_queue)
@@ -216,21 +217,30 @@ class LoguruWidget(ttk.Frame):
         self.log_colors[level] = color
         self.update_tag_colors()
 
-    @staticmethod
-    def get_logging_level() -> str:
-        """Get the currently configured Loguru minimum level name."""
-        current_level_no = logger._core.min_level
-        return LEVEL_NO_TO_NAME.get(current_level_no, "INFO")
+    def get_logging_level(self) -> str:
+        """Get the currently configured level for this widget's sink."""
+        return self._current_level
 
     def set_logging_level(self, level: str) -> None:
         """Set the Loguru sink level for this widget."""
+        normalized_level = level.upper()
+        if normalized_level not in LEVELS:
+            valid_levels = ", ".join(LEVELS)
+            raise ValueError(f"Unknown level '{level}'. Expected one of: {valid_levels}")
+
         if self._sink_id is not None:
             try:
                 logger.remove(self._sink_id)
             except ValueError:
                 pass
 
-        self._sink_id = logger.add(self.sink, level=level, backtrace=True, diagnose=True)
+        self._sink_id = logger.add(
+            self.sink,
+            level=normalized_level,
+            backtrace=True,
+            diagnose=True,
+        )
+        self._current_level = normalized_level
 
     def pack(self, **kwargs: Any) -> None:
         """Pack the widget and initialize child layout on first call."""
@@ -278,6 +288,7 @@ def setup_logger(widget: LoguruWidget) -> None:
             pass
 
     widget._sink_id = logger.add(widget.sink, backtrace=True, diagnose=True)
+    widget._current_level = "DEBUG"
 
     if widget.intercept_logging:
         logging.getLogger().addHandler(LoggingInterceptHandler(widget))
